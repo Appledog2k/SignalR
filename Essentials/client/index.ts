@@ -1,7 +1,10 @@
 import * as signalR from "@microsoft/signalr";
+import { CustomLogger } from "./customLogger";
+
 var counter = document.getElementById("viewCounter");
 // Create connection to the server
 let connection = new signalR.HubConnectionBuilder()
+  .configureLogging(new CustomLogger())
   .withUrl("/hub/view")
   .build();
 // on view update message from client
