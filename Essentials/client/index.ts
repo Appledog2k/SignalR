@@ -1,41 +1,49 @@
 import * as signalR from "@microsoft/signalr";
-import * as customLogger from "./CustomLogger";
 
-// WebSocket = undefined; // disable websockets
-let btn = document.getElementById("btnGetFullName");
+let btnJoinYellow = document.getElementById("btnJoinYellow");
+let btnJoinBlue = document.getElementById("btnJoinBlue");
+let btnJoinOrange = document.getElementById("btnJoinOrange");
+let btnTriggerYellow = document.getElementById("btnTriggerYellow");
+let btnTriggerBlue = document.getElementById("btnTriggerBlue");
+let btnTriggerOrange = document.getElementById("btnTriggerOrange");
 
-// Create connection to the server
+// create connection
 let connection = new signalR.HubConnectionBuilder()
-  // .configureLogging(new customLogger.CustomLogger())
-  .withUrl(
-    "/hub/stringtools"
-    // , {
-    //   transport:
-    //     signalR.HttpTransportType.WebSockets |
-    //     signalR.HttpTransportType.ServerSentEvents |
-    //     signalR.HttpTransportType.LongPolling,
-    //   // timeout: 1,
-    // }
-  )
+  .withUrl("/hub/color")
   .build();
 
-btn.addEventListener("click", function (evt) {
-  var firstName = (
-    document.getElementById("inputFirstName") as HTMLInputElement
-  ).value;
-  var lastName = (document.getElementById("inputLastName") as HTMLInputElement)
-    .value;
-
-  connection.invoke("GetFullName", firstName, lastName).then((name) => {
-    alert(name);
-  });
+btnJoinYellow.addEventListener("click", () => {
+  connection.invoke("JoinGroup", "Yellow");
+});
+btnJoinBlue.addEventListener("click", () => {
+  connection.invoke("JoinGroup", "Blue");
+});
+btnJoinOrange.addEventListener("click", () => {
+  connection.invoke("JoinGroup", "Orange");
 });
 
+btnTriggerYellow.addEventListener("click", () => {
+  connection.invoke("TriggerGroup", "Yellow");
+});
+btnTriggerBlue.addEventListener("click", () => {
+  connection.invoke("TriggerGroup", "Blue");
+});
+btnTriggerOrange.addEventListener("click", () => {
+  connection.invoke("TriggerGroup", "Orange");
+});
+
+// client events
+connection.on("triggerColor", (color) => {
+  document.getElementsByTagName("body")[0].style.backgroundColor = color;
+});
+
+// start the connection
 function startSuccess() {
-  console.log("Connected");
+  console.log("Connected.");
+  // connection.invoke("TriggerColor");
 }
 function startFail() {
-  console.log("Connection failed");
+  console.log("Connection failed.");
 }
 
 connection.start().then(startSuccess, startFail);

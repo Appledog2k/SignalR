@@ -24,7 +24,7 @@ namespace Essentials
 
             app.UseEndpoints(configure =>
             {
-                configure.MapHub<StringToolsHub>("/hub/stringtools");
+                configure.MapHub<ColorHub>("/hub/color");
             });
         }
     }
