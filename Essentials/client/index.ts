@@ -2,34 +2,37 @@ import * as signalR from "@microsoft/signalr";
 import * as customLogger from "./CustomLogger";
 
 // WebSocket = undefined; // disable websockets
-var counter = document.getElementById("viewCounter");
+let btn = document.getElementById("btnGetFullName");
 
 // Create connection to the server
 let connection = new signalR.HubConnectionBuilder()
   // .configureLogging(new customLogger.CustomLogger())
-  .withUrl("/hub/view", {
-    transport:
-      signalR.HttpTransportType.WebSockets |
-      signalR.HttpTransportType.ServerSentEvents |
-      signalR.HttpTransportType.LongPolling,
-    // timeout: 1,
-  })
+  .withUrl(
+    "/hub/stringtools"
+    // , {
+    //   transport:
+    //     signalR.HttpTransportType.WebSockets |
+    //     signalR.HttpTransportType.ServerSentEvents |
+    //     signalR.HttpTransportType.LongPolling,
+    //   // timeout: 1,
+    // }
+  )
   .build();
 
-// on view update message from client
-connection.on("viewCountUpdate", (value: number) => {
-  counter.innerText = value.toString();
+btn.addEventListener("click", function (evt) {
+  var firstName = (
+    document.getElementById("inputFirstName") as HTMLInputElement
+  ).value;
+  var lastName = (document.getElementById("inputLastName") as HTMLInputElement)
+    .value;
+
+  connection.invoke("GetFullName", firstName, lastName).then((name) => {
+    alert(name);
+  });
 });
 
-// notify server we are watching the view
-function notify() {
-  connection.send("notifyWatching");
-}
-
-// start connection
 function startSuccess() {
   console.log("Connected");
-  notify();
 }
 function startFail() {
   console.log("Connection failed");
